@@ -10,31 +10,32 @@
 
 	<span class="image main"><img src="{{ url_for('static', filename='images/pic11.jpg') }}" alt="" /></span>
 
-    <form method="post" action="submit_form">
+    <form method="post" action="">
+        {{ form.hidden_tag() }}
         <div class="row gtr-uniform">
             <div class="col-12 col-12-xsmall">
-                <input type="text" name="name" id="name" value="" placeholder="Name" />
+                {{ form.name() }}
             </div>
             <div class="col-12 col-12-xsmall">
-                <input type="email" name="email" id="email" value="" placeholder="Email" required/>
+                {{ form.email() }}
             </div>
             <div class="col-12 col-12-xsmall">
-                <input type="text" name="subject" id="subject" value="" placeholder="Subject" />
+                {{ form.subject() }}
             </div>
             <!-- Break -->
             <div class="col-12 col-12-small">
-                <input type="checkbox" id="copy" name="copy">
-                <label for="copy">Email me a copy</label>
+                {{ form.copy() }}
+                {{ form.copy.label }}
             </div>
             <!-- Break -->
             <div class="col-12">
-                <textarea name="message" id="message" placeholder="Enter your message" rows="6"></textarea>
+                {{ form.message(rows='5') }}
             </div>
             <!-- Break -->
             <div class="col-12">
                 <ul class="actions">
-                    <li><input type="submit" value="Send Message" class="primary" /></li>
-                    <li><input type="reset" value="Reset" /></li>
+                    {{ form.submit() }}
+                    <!-- <li><input type="reset" value="Reset" /></li> -->
                 </ul>
             </div>
         </div>
