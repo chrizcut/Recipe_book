@@ -1,2 +1,2 @@
-FLASK_APP=main
+FLASK_APP=run
 FLASK_DEBUG=1
