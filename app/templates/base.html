@@ -23,7 +23,7 @@
 
 							<!-- Header -->
 								<header id="header">
-									<a href="index.html" class="logo"><strong>Editorial</strong> by HTML5 UP</a>
+									<a href="{{ url_for('index') }}" class="logo"><strong>Editorial</strong> by HTML5 UP</a>
 									<ul class="icons">
 										<li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
 										<li><a href="#" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
@@ -56,8 +56,8 @@
 										<h2>Menu</h2>
 									</header>
 									<ul>
-										<li><a href="index.html">Homepage</a></li>
-										<li><a href="generic.html">Generic</a></li>
+										<li><a href="{{ url_for('index') }}">Homepage</a></li>
+										<li><a href="{{ url_for('html_page', page_name='generic') }}">Generic</a></li>
 										<li>
 											<span class="opener">Submenu</span>
 											<ul>
@@ -67,7 +67,7 @@
 												<li><a href="#">Feugiat Veroeros</a></li>
 											</ul>
 										</li>
-                                        <li><a href="contact_me.html">Contact me</a></li>
+                                        <li><a href="{{ url_for('contact_me') }}">Contact me</a></li>
 									</ul>
 								</nav>
 
