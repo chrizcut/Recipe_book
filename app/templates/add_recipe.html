@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<!-- Content -->
+<section>
+	<header class="main">
+        <h1>{% if request.path.startswith('/edit_recipe') %}
+            Edit recipe
+            {% else %}
+            Add recipe
+            {% endif %}</h1>
+	</header>
+
+    <hr class="major" />
+
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <h2>Title</h2>
+        {{ form.title }}
+        {% for error in form.title.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+        <h2>Ingredients</h2>
+        <div id="ingredientsContainer">
+            {% for subform in form.ingredients %}
+                <div class="ingredientField">
+                    <div class="row">
+                        <!-- {{ subform.ingredient.id }}
+                        {{ subform.quantity.id }} -->
+                        <div class="col-6 col-6-xsmall">
+                            <label for="{{ subform.ingredient.id }}">Ingredient:</label>
+                            {{ subform.ingredient() }}
+                        </div>
+                        <div class="col-6 col-6-xsmall">
+                            <label for="{{ subform.quantity.id }}">Quantity:</label>
+                            {{ subform.quantity() }}
+                        </div>
+                    </div>
+                  </div>
+            {% endfor %}
+        </div>
+        <div style="margin-top: 10px;">
+            <button type="button" onclick="addIngredient()">Add ingredient</button>
+            <button type="button" onclick="removeIngredient()">Remove last added ingredient</button>
+        </div>
+        <h2>Steps</h2>
+        <div id="stepsContainer">
+            {% for subform in form.steps %}
+            <h3>Step {{ loop.index }}</h3>
+                <div class="stepField" style="margin-bottom: 10px;">
+                    <div class="col-12 col-12-xsmall">
+                        {{ subform.body() }}
+                    </div>
+                  </div>
+            {% endfor %}
+        </div>
+        <div style="margin-top: 10px;">
+            <button type="button" onclick="addStep()">Add step</button>
+            <button type="button" onclick="removeStep()">Remove last added step</button>
+        </div>
+        <div style="margin-top: 10px;">
+            {{ form.submit() }}
+        </div>
+        
+    </form>
+
+    
+
+	
+
+
+
+</section>
+
+{% endblock %}
+
+<!-- <div class="row">
+    <div class="col-6 col-6-xsmall">
+        <label for="{{ subform.ingredient.id }}">Ingrédient:</label>
+        {{ subform.ingredient() }}
+    </div>
+    <div class="col-6 col-6-xsmall">
+        <label for="{{ subform.quantity.id }}">Quantité:</label>
+        {{ subform.quantity() }}
+    </div>
+</div> -->

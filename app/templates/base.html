@@ -22,16 +22,26 @@
 						<div class="inner">
 
 							<!-- Header -->
-								<header id="header">
-									<a href="{{ url_for('index') }}" class="logo"><strong>Editorial</strong> by HTML5 UP</a>
-									<ul class="icons">
-										<li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
-										<li><a href="#" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
-										<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
-										<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
-										<li><a href="#" class="icon brands fa-medium-m"><span class="label">Medium</span></a></li>
-									</ul>
-								</header>
+							<header id="header">
+								<a href="{{ url_for('index') }}" class="logo"><strong>Editorial</strong> by HTML5 UP</a>
+								<ul class="icons">
+									<li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="#" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+									<li><a href="#" class="icon brands fa-medium-m"><span class="label">Medium</span></a></li>
+								</ul>
+							</header>
+
+							{% with messages = get_flashed_messages() %}
+							{% if messages %}
+							<ul>
+								{% for message in messages %}
+								<li>{{ message }}</li>
+								{% endfor %}
+							</ul>
+							{% endif %}
+							{% endwith %}
 
                             {% block content %}{% endblock %}
 
@@ -59,12 +69,10 @@
 										<li><a href="{{ url_for('index') }}">Homepage</a></li>
 										<li><a href="{{ url_for('html_page', page_name='generic') }}">Generic</a></li>
 										<li>
-											<span class="opener">Submenu</span>
+											<span class="opener">Recipes</span>
 											<ul>
-												<li><a href="#">Lorem Dolor</a></li>
-												<li><a href="#">Ipsum Adipiscing</a></li>
-												<li><a href="#">Tempus Magna</a></li>
-												<li><a href="#">Feugiat Veroeros</a></li>
+												<li><a href="{{ url_for('list_recipes') }}">List</a></li>
+												<li><a href="{{ url_for('add_recipe') }}">Add recipe</a></li>
 											</ul>
 										</li>
                                         <li><a href="{{ url_for('contact_me') }}">Contact me</a></li>
@@ -111,6 +119,7 @@
 			<script src="{{ url_for('static', filename='assets/js/breakpoints.min.js') }}"></script>
 			<script src="{{ url_for('static', filename='assets/js/util.js') }}"></script>
 			<script src="{{ url_for('static', filename='assets/js/main.js') }}"></script>
+			<script src="{{ url_for('static', filename='assets/js/add_input_row.js') }}"></script>
 
 	</body>
 </html>
