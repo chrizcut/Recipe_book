@@ -12,7 +12,7 @@ from wtforms.validators import DataRequired, ValidationError
 from app import db
 import sqlalchemy as sa
 import sqlalchemy.orm as so
-from app.models import Recipe, Ingredient, Quantity, Step
+from app.models import Recipe, Ingredient, Step
 
 
 class ContactForm(FlaskForm):

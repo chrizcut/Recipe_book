@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<!-- Content -->
+<section>
+	<header class="main">
+        <h1>Delete recipe</h1>
+	</header>
+
+    <hr class="major" />
+
+    <h2>Are you sure you want to delete {{ recipe.name }}?</h2>
+
+    <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <input type="submit" value="Yes, delete">
+    </form>
+
+</section>
+
+{% endblock %}

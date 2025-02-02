@@ -64,11 +64,18 @@ function addStep() {
     newStep.querySelector('input').focus(); // Focus on new input
 }
 
-  function removeStep() {
-    const stepFields = document.querySelectorAll('.stepField');  // Get all the Step fields
-    if (stepFields.length > 1) {  // Ensure there is more than one Step field to remove
-        const lastStep = stepFields[stepFields.length - 1];  // Get the last Step field
-        lastStep.remove();  // Remove the last Step field
+function removeStep() {
+    const stepFields = document.querySelectorAll('.stepField'); // Get all step fields
+    if (stepFields.length > 1) { // Ensure at least one remains
+        const lastStep = stepFields[stepFields.length - 1]; // Get the last step field
+        const lastStepTitle = lastStep.previousElementSibling; // Get the preceding <h3> title
+
+        if (lastStepTitle && lastStepTitle.tagName === 'H3') {
+            lastStepTitle.remove(); // Remove the title
+        }
+
+        lastStep.remove(); // Remove the step field
     }
+
     return false;
 }

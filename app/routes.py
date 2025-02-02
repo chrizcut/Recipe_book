@@ -3,7 +3,8 @@ from app import app, db
 from app.forms import ContactForm, AddRecipe
 import sqlalchemy as sa
 import sqlalchemy.orm as so
-from app.models import Recipe, Ingredient, Quantity, Step
+from app.models import Recipe, Ingredient, Step
+from flask_wtf.csrf import generate_csrf
 
 
 @app.route("/")
@@ -33,6 +34,7 @@ def list_recipes():
 @app.route("/add_recipe", methods=["GET", "POST"])
 def add_recipe():
     form = AddRecipe()
+    form.set_current_recipe(None)
 
     if form.validate_on_submit():
         recipe = Recipe(name=form.title.data.strip())
@@ -40,21 +42,12 @@ def add_recipe():
         db.session.commit()
 
         for item in form.ingredients.data:
-            ingredient = db.session.scalar(
-                sa.select(Ingredient).where(
-                    Ingredient.name == item["ingredient"].strip()
-                )
-            )
-            if ingredient is None:
-                ingredient = Ingredient(name=item["ingredient"].strip())
-                db.session.add(ingredient)
-                db.session.commit()
-            quantity = Quantity(
+            ingredient = Ingredient(
+                name=item["ingredient"].strip(),
                 quantity=item["quantity"].strip(),
                 recipe_id=recipe.id,
-                ingredient_id=ingredient.id,
             )
-            db.session.add(quantity)
+            db.session.add(ingredient)
             db.session.commit()
 
         for index, step_body in enumerate(form.steps.data):
@@ -87,7 +80,7 @@ def edit_recipe(recipe_id):
             form.ingredients.append_entry(
                 {
                     "ingredient": ingredient.name,
-                    "quantity": recipe.quantity_ingredient(ingredient),
+                    "quantity": ingredient.quantity,
                 }
             )
 
@@ -96,35 +89,22 @@ def edit_recipe(recipe_id):
         for step in recipe.list_steps():
             form.steps.append_entry({"body": step.body})
 
-        print(form.title.data)
-        print(form.ingredients.data)
-        print(form.steps.data)
-
     else:
         if form.validate_on_submit():
 
             recipe.name = form.title.data
 
-            Quantity.query.filter_by(recipe_id=recipe.id).delete()
+            Ingredient.query.filter_by(recipe_id=recipe.id).delete()
             Step.query.filter_by(recipe_id=recipe.id).delete()
             db.session.commit()
 
             for item in form.ingredients.data:
-                ingredient = db.session.scalar(
-                    sa.select(Ingredient).where(
-                        Ingredient.name == item["ingredient"].strip()
-                    )
-                )
-                if ingredient is None:
-                    ingredient = Ingredient(name=item["ingredient"].strip())
-                    db.session.add(ingredient)
-                    db.session.commit()
-                quantity = Quantity(
+                ingredient = Ingredient(
+                    name=item["ingredient"].strip(),
                     quantity=item["quantity"].strip(),
                     recipe_id=recipe.id,
-                    ingredient_id=ingredient.id,
                 )
-                db.session.add(quantity)
+                db.session.add(ingredient)
                 db.session.commit()
 
             for index, step_body in enumerate(form.steps.data):
@@ -136,6 +116,25 @@ def edit_recipe(recipe_id):
             return redirect(url_for("list_recipes"))
 
     return render_template("add_recipe.html", form=form)
+
+
+@app.route("/delete_recipe/<int:recipe_id>", methods=["GET", "POST"])
+def delete_recipe(recipe_id):
+    recipe = Recipe.query.get_or_404(recipe_id)  # Get recipe or return 404
+
+    if request.method == "POST":
+
+        Ingredient.query.filter_by(recipe_id=recipe.id).delete()
+        Step.query.filter_by(recipe_id=recipe.id).delete()
+        Recipe.query.filter_by(id=recipe.id).delete()
+        db.session.commit()
+
+        flash("Recipe deleted successfully!")
+        return redirect(url_for("list_recipes"))
+
+    return render_template(
+        "delete_recipe.html", recipe=recipe, csrf_token=generate_csrf()
+    )
 
 
 @app.route("/<string:page_name>")

@@ -8,26 +8,14 @@ class Recipe(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     name: so.Mapped[str] = so.mapped_column(sa.String, index=True, unique=True)
 
-    quantities_recipe: so.WriteOnlyMapped["Quantity"] = so.relationship(
+    ingredients: so.WriteOnlyMapped["Ingredient"] = so.relationship(
         back_populates="recipe_q"
     )
     steps: so.WriteOnlyMapped["Step"] = so.relationship(back_populates="recipe_s")
 
     def list_ingredients(self):
         return (
-            db.session.query(Ingredient)
-            .join(Quantity, Quantity.ingredient_id == Ingredient.id)
-            .filter(Quantity.recipe_id == self.id)
-            .all()
-        )
-
-    def quantity_ingredient(self, ingredient):
-        return (
-            db.session.query(Quantity.quantity)
-            .filter(
-                Quantity.recipe_id == self.id, Quantity.ingredient_id == ingredient.id
-            )
-            .scalar()
+            db.session.query(Ingredient).filter(Ingredient.recipe_id == self.id).all()
         )
 
     def list_steps(self):
@@ -45,24 +33,12 @@ class Recipe(db.Model):
 class Ingredient(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     name: so.Mapped[str] = so.mapped_column(sa.String)
-
-    quantities_ingredients: so.WriteOnlyMapped["Quantity"] = so.relationship(
-        back_populates="ingredients_q"
+    quantity: so.Mapped[Optional[str]] = so.mapped_column(sa.String)
+    recipe_id: so.Mapped[int] = so.mapped_column(
+        sa.ForeignKey(Recipe.id, name="fk_ingredient_recipe"), index=True
     )
 
-
-class Quantity(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    quantity: so.Mapped[str] = so.mapped_column(sa.String)
-    recipe_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Recipe.id), index=True)
-    ingredient_id: so.Mapped[int] = so.mapped_column(
-        sa.ForeignKey(Ingredient.id), index=True
-    )
-
-    recipe_q: so.Mapped[Recipe] = so.relationship(back_populates="quantities_recipe")
-    ingredients_q: so.Mapped[Ingredient] = so.relationship(
-        back_populates="quantities_ingredients"
-    )
+    recipe_q: so.Mapped[Recipe] = so.relationship(back_populates="ingredients")
 
 
 class Step(db.Model):
