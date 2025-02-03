@@ -1,1 +1,0 @@
-- j'ai enlevé la classe Ingredient dans models.py pcq si j'ajoutais un mauvais ingrédient, je ne pouvais pas le supprimer. Il y aurait eu moyen de s'en sortir en ajoutant une section "Add/remove ingredient" et en faisant un select sur les ingrédients dans "Add recipe" mais ça me paraissait un peu compliqué.
