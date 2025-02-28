@@ -73,13 +73,18 @@ def list_recipes(user_id):
     )
 
 
-@app.route("/add_recipe", methods=["GET", "POST"])
-def add_recipe():
+@app.route("/<int:user_id>/add_recipe", methods=["GET", "POST"])
+def add_recipe(user_id):
     form = AddRecipe()
     form.set_current_recipe(None)
 
     if form.validate_on_submit():
-        recipe = Recipe(name=form.title.data.strip(), user_id=current_user.id)
+        max_id = (
+            db.session.query(db.func.coalesce(db.func.max(Recipe.id), 0))
+            .filter_by(user_id=user_id)
+            .scalar()
+        )
+        recipe = Recipe(name=form.title.data.strip(), user_id=user_id, id=max_id + 1)
         db.session.add(recipe)
         db.session.commit()
 
@@ -102,9 +107,9 @@ def add_recipe():
     return render_template("add_recipe.html", form=form)
 
 
-@app.route("/edit_recipe/<int:recipe_id>", methods=["GET", "POST"])
-def edit_recipe(recipe_id):
-    recipe = Recipe.query.get_or_404(recipe_id)  # Get recipe or return 404
+@app.route("/<int:user_id>/edit_recipe/<int:recipe_id>", methods=["GET", "POST"])
+def edit_recipe(user_id, recipe_id):
+    recipe = Recipe.query.get_or_404((user_id, recipe_id))  # Get recipe or return 404
 
     # Pre-fill form with existing recipe data
     form = AddRecipe()
@@ -157,9 +162,9 @@ def edit_recipe(recipe_id):
     return render_template("add_recipe.html", form=form)
 
 
-@app.route("/delete_recipe/<int:recipe_id>", methods=["GET", "POST"])
-def delete_recipe(recipe_id):
-    recipe = Recipe.query.get_or_404(recipe_id)  # Get recipe or return 404
+@app.route("/<int:user_id>/delete_recipe/<int:recipe_id>", methods=["GET", "POST"])
+def delete_recipe(user_id, recipe_id):
+    recipe = Recipe.query.get_or_404((user_id, recipe_id))  # Get recipe or return 404
 
     if request.method == "POST":
 
@@ -168,7 +173,6 @@ def delete_recipe(recipe_id):
         Recipe.query.filter_by(id=recipe.id).delete()
         db.session.commit()
 
-        flash("Recipe deleted successfully!")
         return redirect(url_for("list_recipes", user_id=current_user.id))
 
     return render_template(
