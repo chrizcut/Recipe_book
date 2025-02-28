@@ -1,16 +1,57 @@
 from flask import render_template, request, redirect, url_for, flash
 from app import app, db
-from app.forms import ContactForm, AddRecipe
+from app.forms import ContactForm, AddRecipe, LoginForm, RegistrationForm
 import sqlalchemy as sa
 import sqlalchemy.orm as so
-from app.models import Recipe, Ingredient, Step
+from app.models import Recipe, Ingredient, Step, User
 from flask_wtf.csrf import generate_csrf
+from flask_login import current_user, login_user, logout_user
 
 
 @app.route("/")
 @app.route("/index/")
 def index():
     return render_template("index.html")
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for("index"))
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = db.session.scalar(
+            sa.select(User).where(User.username == form.username.data)
+        )
+        if user is None or not user.check_password(form.password.data):
+            flash("Invalid username or password")
+            return redirect(url_for("login"))
+        login_user(user, remember=form.remember_me.data)
+        return redirect(url_for("index"))
+    return render_template("login.html", title="Sign In", form=form)
+
+
+@app.route("/logout")
+def logout():
+    logout_user()
+    return redirect(url_for("index"))
+
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for("index"))
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        user = User(username=form.username.data)
+        user.set_password(form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        flash(
+            "Congratulations, you are now a registered user! Please sign in with your new credentials."
+        )
+        return redirect(url_for("login"))
+    return render_template("register.html", title="Register", form=form)
 
 
 @app.route("/contact_me", methods=["GET", "POST"])
@@ -21,10 +62,11 @@ def contact_me():
     return render_template("contact_me.html", form=form)
 
 
-@app.route("/list_recipes")
-def list_recipes():
-    query = sa.select(Recipe).order_by(Recipe.name.asc())
-    recipes = db.session.scalars(query).all()
+@app.route("/<int:user_id>/list_recipes")
+def list_recipes(user_id):
+    # query = sa.select(Recipe).order_by(Recipe.name.asc())
+    # recipes = db.session.scalars(query).all()
+    recipes = db.session.query(Recipe).filter(Recipe.user_id == user_id).all()
     return render_template(
         "list_recipes.html",
         recipes=recipes,
@@ -37,7 +79,7 @@ def add_recipe():
     form.set_current_recipe(None)
 
     if form.validate_on_submit():
-        recipe = Recipe(name=form.title.data.strip())
+        recipe = Recipe(name=form.title.data.strip(), user_id=current_user.id)
         db.session.add(recipe)
         db.session.commit()
 
@@ -55,9 +97,7 @@ def add_recipe():
             db.session.add(step)
             db.session.commit()
 
-        flash("Recipe successfully added!")
-
-        return redirect(url_for("list_recipes"))
+        return redirect(url_for("list_recipes", user_id=current_user.id))
 
     return render_template("add_recipe.html", form=form)
 
@@ -112,7 +152,6 @@ def edit_recipe(recipe_id):
                 db.session.add(step)
                 db.session.commit()
 
-            flash("Recipe updated successfully!")
             return redirect(url_for("list_recipes"))
 
     return render_template("add_recipe.html", form=form)
@@ -130,7 +169,7 @@ def delete_recipe(recipe_id):
         db.session.commit()
 
         flash("Recipe deleted successfully!")
-        return redirect(url_for("list_recipes"))
+        return redirect(url_for("list_recipes", user_id=current_user.id))
 
     return render_template(
         "delete_recipe.html", recipe=recipe, csrf_token=generate_csrf()

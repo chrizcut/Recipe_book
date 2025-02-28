@@ -6,7 +6,7 @@
 -->
 <html>
 	<head>
-		<title>Editorial by HTML5 UP</title>
+		<title>Recipe book</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/main.css') }}" />
@@ -21,27 +21,7 @@
 					<div id="main">
 						<div class="inner">
 
-							<!-- Header -->
-							<header id="header">
-								<a href="{{ url_for('index') }}" class="logo"><strong>Editorial</strong> by HTML5 UP</a>
-								<ul class="icons">
-									<li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
-									<li><a href="#" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
-									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
-									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
-									<li><a href="#" class="icon brands fa-medium-m"><span class="label">Medium</span></a></li>
-								</ul>
-							</header>
 
-							{% with messages = get_flashed_messages() %}
-							{% if messages %}
-							<ul>
-								{% for message in messages %}
-								<li>{{ message }}</li>
-								{% endfor %}
-							</ul>
-							{% endif %}
-							{% endwith %}
 
                             {% block content %}{% endblock %}
 
@@ -54,36 +34,42 @@
 						<div class="inner">
 
 							<!-- Search -->
-								<section id="search" class="alt">
+								<!-- <section id="search" class="alt">
 									<form method="post" action="#">
 										<input type="text" name="query" id="query" placeholder="Search" />
 									</form>
-								</section>
+								</section> -->
+
+							
 
 							<!-- Menu -->
 								<nav id="menu">
 									<header class="major">
 										<h2>Menu</h2>
 									</header>
+									
 									<ul>
 										<li><a href="{{ url_for('index') }}">Homepage</a></li>
-										<!-- <li><a href="{{ url_for('html_page', page_name='generic') }}">Generic</a></li> -->
-										<li><a href="{{ url_for('list_recipes') }}">List of recipes</a></li>
-										<li><a href="{{ url_for('add_recipe') }}">Add recipe</a></li>
-										<!-- <li>
-											<span class="opener">Recipes</span>
-											<ul>
-												<li><a href="{{ url_for('list_recipes') }}">List</a></li>
-												<li><a href="{{ url_for('add_recipe') }}">Add recipe</a></li>
-											</ul>
-										</li> -->
-                                        <!-- <li><a href="{{ url_for('contact_me') }}">Contact me</a></li> -->
+
+										{% if current_user.is_anonymous==false %}
+										<li><a href="{{ url_for('list_recipes', user_id=current_user.id) }}">List of recipes</a></li>
+										<li><a href="{{ url_for('add_recipe', user_id=current_user.id) }}">Add recipe</a></li>
+										{% endif %}
 									</ul>
 								</nav>
 
+								<section id="login-section">
+									{% if current_user.is_anonymous %}
+									<a href="{{ url_for('login') }}">Login/Sign up</a>
+									{% else %}
+									<a href="{{ url_for('logout') }}">Logout</a>
+									{% endif %}
+									
+								</section>
+
 							<!-- Section -->
-								<section>
-									<header class="major">
+								<!-- <section> -->
+									<!-- <header class="major">
 										<h2>Ante interdum</h2>
 									</header>
 									<div class="mini-posts">
@@ -102,13 +88,13 @@
 									</div>
 									<ul class="actions">
 										<li><a href="#" class="button">More</a></li>
-									</ul>
-								</section>
+									</ul> -->
+								<!-- </section> -->
 
 							<!-- Footer -->
-								<footer id="footer">
-									<p class="copyright">&copy; Untitled. All rights reserved. Demo Images: <a href="https://unsplash.com">Unsplash</a>. Design: <a href="https://html5up.net">HTML5 UP</a>.</p>
-								</footer>
+								<!-- <footer id="footer">
+									Design: <a href="https://html5up.net">HTML5 UP</a>.</p>
+								</footer> -->
 
 						</div>
 					</div>
