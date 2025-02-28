@@ -152,7 +152,7 @@ def edit_recipe(recipe_id):
                 db.session.add(step)
                 db.session.commit()
 
-            return redirect(url_for("list_recipes"))
+            return redirect(url_for("list_recipes", user_id=current_user.id))
 
     return render_template("add_recipe.html", form=form)
 
