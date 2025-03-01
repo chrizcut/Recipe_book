@@ -2,17 +2,18 @@
 
 {% block content %}
 
+<!-- Header -->
+<header id="header">
+    <h1>{% if "/edit_recipe" in request.path: %}
+        Edit recipe
+        {% else %}
+        Add recipe
+        {% endif %}
+    </h1>
+</header>
+
 <!-- Content -->
 <section>
-	<header class="main">
-        <h1>{% if request.path.startswith('/edit_recipe') %}
-            Edit recipe
-            {% else %}
-            Add recipe
-            {% endif %}</h1>
-	</header>
-
-    <hr class="major" />
 
     <form method="POST">
         {{ form.hidden_tag() }}

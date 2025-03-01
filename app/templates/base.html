@@ -54,6 +54,7 @@
 										{% if current_user.is_anonymous==false %}
 										<li><a href="{{ url_for('list_recipes', user_id=current_user.id) }}">List of recipes</a></li>
 										<li><a href="{{ url_for('add_recipe', user_id=current_user.id) }}">Add recipe</a></li>
+										<li><a href="{{ url_for('delete_account', user_id=current_user.id) }}">Delete account</a></li>
 										{% endif %}
 									</ul>
 								</nav>
@@ -107,7 +108,7 @@
 			<script src="{{ url_for('static', filename='assets/js/breakpoints.min.js') }}"></script>
 			<script src="{{ url_for('static', filename='assets/js/util.js') }}"></script>
 			<script src="{{ url_for('static', filename='assets/js/main.js') }}"></script>
-			<script src="{{ url_for('static', filename='assets/js/add_input_row.js') }}"></script>
+			<script src="{{ url_for('static', filename='assets/js/custom_buttons.js') }}"></script>
 
 	</body>
 </html>

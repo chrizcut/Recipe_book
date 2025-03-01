@@ -54,6 +54,25 @@ def register():
     return render_template("register.html", title="Register", form=form)
 
 
+@app.route("/<int:user_id>/delete_account/", methods=["GET", "POST"])
+def delete_account(user_id):
+    user = User.query.get_or_404(user_id)  # Get recipe or return 404
+
+    if request.method == "POST":
+        recipes = db.session.query(Recipe).filter(Recipe.user_id == user_id).all()
+        for recipe in recipes:
+            Ingredient.query.filter_by(recipe_id=recipe.id).delete()
+            Step.query.filter_by(recipe_id=recipe.id).delete()
+            Recipe.query.filter_by(id=recipe.id).delete()
+
+        User.query.filter_by(id=user_id).delete()
+        db.session.commit()
+
+        return redirect(url_for("index"))
+
+    return render_template("delete_account.html", csrf_token=generate_csrf())
+
+
 @app.route("/contact_me", methods=["GET", "POST"])
 def contact_me():
     form = ContactForm()
@@ -66,7 +85,12 @@ def contact_me():
 def list_recipes(user_id):
     # query = sa.select(Recipe).order_by(Recipe.name.asc())
     # recipes = db.session.scalars(query).all()
-    recipes = db.session.query(Recipe).filter(Recipe.user_id == user_id).all()
+    recipes = (
+        db.session.query(Recipe)
+        .filter(Recipe.user_id == user_id)
+        .order_by(Recipe.name.asc())
+        .all()
+    )
     return render_template(
         "list_recipes.html",
         recipes=recipes,
@@ -84,7 +108,7 @@ def add_recipe(user_id):
             .filter_by(user_id=user_id)
             .scalar()
         )
-        recipe = Recipe(name=form.title.data.strip(), user_id=user_id, id=max_id + 1)
+        recipe = Recipe(name=form.title.data.strip(), user_id=user_id)
         db.session.add(recipe)
         db.session.commit()
 
@@ -107,9 +131,9 @@ def add_recipe(user_id):
     return render_template("add_recipe.html", form=form)
 
 
-@app.route("/<int:user_id>/edit_recipe/<int:recipe_id>", methods=["GET", "POST"])
-def edit_recipe(user_id, recipe_id):
-    recipe = Recipe.query.get_or_404((user_id, recipe_id))  # Get recipe or return 404
+@app.route("/edit_recipe/<int:recipe_id>", methods=["GET", "POST"])
+def edit_recipe(recipe_id):
+    recipe = Recipe.query.get_or_404(recipe_id)  # Get recipe or return 404
 
     # Pre-fill form with existing recipe data
     form = AddRecipe()
@@ -162,9 +186,9 @@ def edit_recipe(user_id, recipe_id):
     return render_template("add_recipe.html", form=form)
 
 
-@app.route("/<int:user_id>/delete_recipe/<int:recipe_id>", methods=["GET", "POST"])
-def delete_recipe(user_id, recipe_id):
-    recipe = Recipe.query.get_or_404((user_id, recipe_id))  # Get recipe or return 404
+@app.route("/delete_recipe/<int:recipe_id>", methods=["GET", "POST"])
+def delete_recipe(recipe_id):
+    recipe = Recipe.query.get_or_404(recipe_id)  # Get recipe or return 404
 
     if request.method == "POST":
 

@@ -1,8 +1,8 @@
 """added everything at once
 
-Revision ID: dcaa2534d0c7
+Revision ID: 1407ab9ddad2
 Revises: 
-Create Date: 2025-02-28 15:33:17.173315
+Create Date: 2025-03-01 11:22:48.932266
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'dcaa2534d0c7'
+revision = '1407ab9ddad2'
 down_revision = None
 branch_labels = None
 depends_on = None

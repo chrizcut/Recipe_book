@@ -29,13 +29,11 @@ class User(UserMixin, db.Model):
 
 
 class Recipe(db.Model):
-    id: so.Mapped[int] = so.mapped_column(sa.Integer)
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
     name: so.Mapped[str] = so.mapped_column(sa.String, index=True)
     user_id: so.Mapped[int] = so.mapped_column(
         sa.ForeignKey(User.id, name="fk_recipe_user"), index=True
     )
-
-    __table_args__ = (sa.PrimaryKeyConstraint("user_id", "id", name="pk_recipe"),)
 
     ingredients: so.WriteOnlyMapped["Ingredient"] = so.relationship(
         back_populates="recipe_q"
